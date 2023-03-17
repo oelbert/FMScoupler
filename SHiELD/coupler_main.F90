@@ -158,11 +158,6 @@ implicit none
       !$ser off
     !$ser verbatim endif
      !$ser on
-    !$ser verbatim print *, 'INFO: serialize test'
-    !$ser savepoint Test1
-    !$ser data rank=mpi_rank
-    !$ser verbatim print *, 'INFO: serialize test pass?'
-    !$ser off
     call update_atmos_radiation_physics (Atm)
 
     call update_atmos_model_state (Atm)
