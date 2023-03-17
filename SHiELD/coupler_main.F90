@@ -117,14 +117,11 @@ implicit none
 ! ----- local variables -----
    character(len=32) :: timestamp
    logical :: intrm_rst, intrm_rst_1step
+   !$ser verbatim integer :: save_timestep
+   !$ser verbatim integer :: mpi_rank,ier
+   !$ser verbatim logical :: ser_on
 
 !#######################################################################
- 
- !$ser verbatim integer :: save_timestep
- !$ser verbatim save_timestep = 1
-
- !$ser verbatim integer :: mpi_rank,ier
- !$ser verbatim logical :: ser_on
 
  call fms_init()
  call sat_vapor_pres_init()
@@ -141,6 +138,8 @@ implicit none
  mainClock = mpp_clock_id( 'Main loop' )
  termClock = mpp_clock_id( 'Termination' )
  call mpp_clock_begin(mainClock) !begin main loop
+
+ !$ser verbatim save_timestep = 1
 
  !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
  !$ser init directory='/lustre/f2/scratch/gfdl/Oliver.Elbert/data_serialization/mp_serial/C48/20210501.00Z/rundir/test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
