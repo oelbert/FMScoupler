@@ -24,6 +24,8 @@
 program coupler_main
 
 
+!$ser verbatim use mpi
+
 use FMS
 use FMSconstants,    only: fmsconstants_init
 use atmos_model_mod, only: atmos_model_init, atmos_model_end,  &
@@ -34,6 +36,8 @@ use atmos_model_mod, only: atmos_model_init, atmos_model_end,  &
 !--- FMS old io
 use fms_io_mod, only: fms_io_exit!< This can't be removed until fms_io is not used at all
 
+!$ser verbatim use,intrinsic :: ISO_Fortran_env
+!$ser verbatim USE m_serialize, ONLY: fs_is_serialization_on
 implicit none
 
 !-----------------------------------------------------------------------
@@ -116,7 +120,13 @@ implicit none
    logical :: intrm_rst, intrm_rst_1step
 
 !#######################################################################
+ 
+ !$ser verbatim integer :: save_timestep
+ !$ser verbatim save_timestep = 1
 
+ !$ser verbatim integer :: mpi_rank,ier
+ !$ser verbatim logical :: ser_on
+ 
  call fms_init()
 
  initClock = mpp_clock_id( '-Initialization' )
@@ -134,12 +144,29 @@ implicit none
  mainClock = mpp_clock_id( '-Main Loop' )
  call mpp_clock_begin(mainClock) !begin main loop
 
+ !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
+ !$ser init directory='/lustre/f2/scratch/gfdl/Oliver.Elbert/data_serialization/mp_serial/C48/20210501.00Z/rundir/test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
+ !$ser mode write
+ !$ser off
+
+ !$ser on
+ !$ser verbatim print *, 'INFO: serialize test'
+ !$ser savepoint Test1
+ !$ser data rank=mpi_rank
+ !$ser verbatim print *, 'INFO: serialize test pass?'
+ !$ser off
+
  do nc = 1, num_cpld_calls
 
     Time_atmos = Time_atmos + Time_step_atmos
 
     call update_atmos_model_dynamics (Atm)
 
+    !$ser verbatim if (nc == save_timestep) then
+      !$ser on
+    !$ser verbatim else
+      !$ser off
+    !$ser verbatim endif
     call update_atmos_radiation_physics (Atm)
 
     call update_atmos_model_state (Atm)
@@ -174,6 +201,7 @@ implicit none
     call print_memuse_stats('after full step')
 
  enddo
+ !$ser cleanup
 
 !-----------------------------------------------------------------------
 
