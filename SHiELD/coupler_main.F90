@@ -142,7 +142,7 @@ implicit none
  !$ser verbatim save_timestep = 1
 
  !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
- !$ser init directory='/lustre/f2/scratch/gfdl/Oliver.Elbert/data_serialization/mp_serial/C48/20210501.00Z/rundir/test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
+ !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
  !$ser mode write
  !$ser off
 
