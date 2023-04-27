@@ -123,13 +123,6 @@ implicit none
 
 !#######################################################################
 
- !$ser verbatim save_timestep = 1
-
- !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
- !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
- !$ser mode write
- !$ser off
-
  call fms_init()
  call sat_vapor_pres_init()
  call fmsconstants_init()
@@ -137,9 +130,7 @@ implicit none
  initClock = mpp_clock_id( 'Initialization' )
  call mpp_clock_begin (initClock) !nesting problem
 
- !$ser on
  call coupler_init
- !$ser off
  call print_memuse_stats('after coupler init')
 
  call mpp_set_current_pelist()
@@ -147,6 +138,13 @@ implicit none
  mainClock = mpp_clock_id( 'Main loop' )
  termClock = mpp_clock_id( 'Termination' )
  call mpp_clock_begin(mainClock) !begin main loop
+
+ !$ser verbatim save_timestep = 1
+
+ !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
+ !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
+ !$ser mode write
+ !$ser off
 
  do nc = 1, num_cpld_calls
 
