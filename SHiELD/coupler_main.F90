@@ -123,6 +123,13 @@ implicit none
 
 !#######################################################################
 
+ !$ser verbatim save_timestep = 1
+
+ !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
+ !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
+ !$ser mode write
+ !$ser on
+
  call fms_init()
  call sat_vapor_pres_init()
  call fmsconstants_init()
@@ -135,16 +142,12 @@ implicit none
 
  call mpp_set_current_pelist()
  call mpp_clock_end (initClock) !end initialization
+
+ !$ser off
+
  mainClock = mpp_clock_id( 'Main loop' )
  termClock = mpp_clock_id( 'Termination' )
  call mpp_clock_begin(mainClock) !begin main loop
-
- !$ser verbatim save_timestep = 1
-
- !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
- !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
- !$ser mode write
- !$ser off
 
  do nc = 1, num_cpld_calls
 
