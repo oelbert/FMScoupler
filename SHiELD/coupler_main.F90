@@ -125,14 +125,14 @@ implicit none
 
  !$ser verbatim save_timestep = 1
 
+ call fms_init()
+ call sat_vapor_pres_init()
+ call fmsconstants_init()
+
  !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
  !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
  !$ser mode write
  !$ser on
-
- call fms_init()
- call sat_vapor_pres_init()
- call fmsconstants_init()
 
  initClock = mpp_clock_id( 'Initialization' )
  call mpp_clock_begin (initClock) !nesting problem
