@@ -23,6 +23,7 @@
 !! Sequences the dynamics, radiation/physics, and updates the prognostic state.
 program coupler_main
 
+!$ser verbatim use mpi
 
 use FMS
 use FMSconstants,    only: fmsconstants_init
@@ -35,6 +36,8 @@ use atmos_model_mod, only: atmos_model_init, atmos_model_end,  &
 #ifdef use_deprecated_io
 use fms_io_mod, only: fms_io_exit!< This can't be removed until fms_io is not used at all
 #endif
+!$ser verbatim use,intrinsic :: ISO_Fortran_env
+!$ser verbatim USE m_serialize, ONLY: fs_is_serialization_on
 implicit none
 
 !-----------------------------------------------------------------------
@@ -115,13 +118,23 @@ implicit none
 ! ----- local variables -----
    character(len=32) :: timestamp
    logical :: intrm_rst, intrm_rst_1step
+   !$ser verbatim integer :: save_timestep
+   !$ser verbatim integer :: mpi_rank,ier
+   !$ser verbatim logical :: ser_on
 
 !#######################################################################
+
+ !$ser verbatim save_timestep = 1
 
  call fms_init()
 
  initClock = fms_mpp_clock_id( '-Initialization' )
  call fms_mpp_clock_begin (initClock) !nesting problem
+
+ !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
+ !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
+ !$ser mode write
+ !$ser on
 
  call fms_sat_vapor_pres_init()
  call fmsconstants_init()
@@ -132,13 +145,19 @@ implicit none
  call fms_mpp_set_current_pelist()
  call fms_mpp_clock_end (initClock) !end initialization
 
+ !$ser off
+
  mainClock = fms_mpp_clock_id( '-Main Loop' )
  call fms_mpp_clock_begin(mainClock) !begin main loop
 
  do nc = 1, num_cpld_calls
 
     Time_atmos = Time_atmos + Time_step_atmos
-
+    !$ser verbatim if (nc == save_timestep) then
+      !$ser on
+    !$ser verbatim else
+      !$ser off
+    !$ser verbatim endif
     call update_atmos_model_dynamics (Atm)
 
     call update_atmos_radiation_physics (Atm)
@@ -175,7 +194,7 @@ implicit none
     call fms_memutils_print_memuse_stats('after full step')
 
  enddo
-
+ !$ser cleanup
 !-----------------------------------------------------------------------
 
  call fms_mpp_set_current_pelist()
