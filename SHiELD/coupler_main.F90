@@ -158,6 +158,7 @@ implicit none
     !$ser verbatim else
       !$ser off
     !$ser verbatim endif
+    print *, 'INFO: Starting timestep ', nc
     call update_atmos_model_dynamics (Atm)
 
     call update_atmos_radiation_physics (Atm)
