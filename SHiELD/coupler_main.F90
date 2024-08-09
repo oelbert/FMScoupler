@@ -124,7 +124,7 @@ implicit none
 
 !#######################################################################
 
- !$ser verbatim save_timestep = 1
+ !$ser verbatim save_timestep = 10
 
  call fms_init()
 
