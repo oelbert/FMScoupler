@@ -124,7 +124,7 @@ implicit none
 
 !#######################################################################
 
- !$ser verbatim save_timestep = 1
+ !$ser verbatim save_timestep = 10
 
  call fms_init()
 
@@ -158,6 +158,7 @@ implicit none
     !$ser verbatim else
       !$ser off
     !$ser verbatim endif
+    !$ser verbatim print *, 'INFO: Starting timestep ', nc
     call update_atmos_model_dynamics (Atm)
 
     call update_atmos_radiation_physics (Atm)
