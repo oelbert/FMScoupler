@@ -23,6 +23,8 @@
 !! of [**full/coupler_main.F90**](full_2coupler__main_8_f90.html)
 program coupler_main
 
+!$ser verbatim use mpi
+
 !-----------------------------------------------------------------------
 !
 !
@@ -67,7 +69,8 @@ use FMSconstants, only: fmsconstants_init
 #ifdef use_deprecated_io
 use fms_io_mod, only: fms_io_exit!< This can't be removed until fms_io is not used at all
 #endif
-
+!$ser verbatim use,intrinsic :: ISO_Fortran_env
+!$ser verbatim USE m_serialize, ONLY: fs_is_serialization_on
 implicit none
 
 !-----------------------------------------------------------------------
@@ -133,6 +136,10 @@ implicit none
    logical :: do_land = .FALSE.   !< If true, will call update_land_model_fast
    logical :: use_hyper_thread = .false.
 
+   !$ser verbatim integer :: save_timestep
+   !$ser verbatim integer :: mpi_rank,ier
+   !$ser verbatim logical :: ser_on
+
    namelist /coupler_nml/ current_date, calendar, force_date_from_namelist, &
                           months, days, hours, minutes, seconds,            &
                           dt_atmos, dt_ocean, atmos_nthreads,               &
@@ -140,12 +147,19 @@ implicit none
 
 !#######################################################################
 
+    !$ser verbatim save_timestep = 16
+
    call fms_init()
    call fms_mpp_init()
    initClock = fms_mpp_clock_id( 'Initialization' )
    mainClock = fms_mpp_clock_id( 'Main loop' )
    termClock = fms_mpp_clock_id( 'Termination' )
    call fms_mpp_clock_begin (initClock)
+
+   !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
+   !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
+   !$ser mode write
+   !$ser on
 
    call fms_init
    call fmsconstants_init
@@ -155,11 +169,18 @@ implicit none
    if (do_chksum) call coupler_chksum('coupler_init+', 0)
 
    call fms_mpp_clock_end (initClock) !end initialization
+   !$ser off
    call fms_mpp_clock_begin(mainClock) !begin main loop
 
 
    !------ ocean/slow-ice integration loop ------
    do nc = 1, num_cpld_calls
+    !$ser verbatim if (nc == save_timestep) then
+      !$ser on
+      !$ser verbatim print *, 'INFO: starting timestep',nc,' time is',Time_atmos
+    !$ser verbatim else
+      !$ser off
+    !$ser verbatim endif
      if (do_chksum) call coupler_chksum('top_of_coupled_loop+', nc)
 
      !------ atmos/fast-land/fast-ice integration loop -------
@@ -229,7 +250,7 @@ implicit none
      if (do_chksum) call coupler_chksum('ice_model_slow+', nc)
 
    enddo
-
+   !$ser cleanup
 !-----------------------------------------------------------------------
 
    call fms_mpp_clock_end(mainClock)
