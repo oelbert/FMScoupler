@@ -331,11 +331,15 @@
 !!     This error should probably not occur because of checks done at initialization time.
 program coupler_main
 
+  !$ser verbatim use mpi
+
   !--- F90 module for OpenMP
   use omp_lib
   use FMS
   use full_coupler_mod
-
+  !$ser verbatim use,intrinsic :: ISO_Fortran_env
+  !$ser verbatim USE m_serialize, ONLY: fs_is_serialization_on
+  
   implicit none
 
   !> model defined types.
@@ -378,6 +382,10 @@ program coupler_main
   integer :: conc_nthreads = 1
   real :: dsec, omp_sec(2)=0.0, imb_sec(2)=0.0
 
+   !$ser verbatim integer :: save_timestep
+   !$ser verbatim integer :: mpi_rank,ier
+   !$ser verbatim logical :: ser_on
+
   call fms_mpp_init()
 
   !>these clocks are on the global pelist
@@ -385,6 +393,10 @@ program coupler_main
   call fms_mpp_clock_begin(coupler_clocks%initialization)
 
   call fms_init
+  !$ser verbatim call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank, ier)
+  !$ser init directory='test_data/' prefix='Generator'mpi_rank=mpi_rank unuique_id=.true.
+  !ser mode write
+  !$ser on
   call fmsconstants_init
   call fms_affinity_init
 
@@ -399,6 +411,7 @@ program coupler_main
 
   call fms_mpp_set_current_pelist()
   call fms_mpp_clock_end(coupler_clocks%initialization) !end initialization
+  !$ser off
   call fms_mpp_clock_begin(coupler_clocks%main)         !begin main loop
 
 !-----------------------------------------------------------------------
@@ -409,6 +422,12 @@ program coupler_main
 
   !> ocean/slow-ice integration loop
   coupled_timestep_loop : do nc = 1, num_cpld_calls
+    !$ser verbatim if (nc == save_timestep) then
+      !$ser on
+      !$ser verbatim print *, 'INFO: starting timestep ',nc,' time is ',Time_atmos
+    !$ser verbatim else
+      !$ser off
+    !$ser verbatim endif
 
     if (do_chksum) then
       call coupler_chksum_obj%get_coupler_chksums('top_of_coupled_loop+', nc)
@@ -670,6 +689,7 @@ program coupler_main
     imb_sec(:)=0.
 
   enddo coupled_timestep_loop
+  !$ser cleanup
 
   !-----------------------------------------------------------------------
   if(check_stocks >=0 .and. do_flux) call coupler_flux_init_finish_stocks(Time, Atm, Land, Ice, Ocean_state, &
