@@ -424,7 +424,6 @@ program coupler_main
   coupled_timestep_loop : do nc = 1, num_cpld_calls
     !$ser verbatim if (nc == save_timestep) then
       !$ser on
-      !$ser verbatim print *, 'INFO: starting timestep ',nc,' time is ',Time_atmos
     !$ser verbatim else
       !$ser off
     !$ser verbatim endif
