@@ -394,7 +394,7 @@ program coupler_main
 
   call fms_init
   !$ser verbatim call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank, ier)
-  !$ser init directory='test_data/' prefix='Generator'mpi_rank=mpi_rank unuique_id=.true.
+  !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
   !ser mode write
   !$ser on
   call fmsconstants_init

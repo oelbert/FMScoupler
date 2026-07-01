@@ -151,7 +151,7 @@ implicit none
 
 !#######################################################################
 
-   !$ser verbatim save_timestep = 16
+   !$ser verbatim save_timestep = 1
 
    call fms_init()
    call fms_mpp_init()
@@ -161,7 +161,7 @@ implicit none
    call fms_mpp_clock_begin (initClock)
 
    !$ser verbatim call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank, ier)
-   !$ser init directory='test_data/' prefix='Generator'mpi_rank=mpi_rank unuique_id=.true.
+   !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
    !ser mode write
    !$ser on
 
@@ -255,6 +255,7 @@ implicit none
      if (do_chksum) call coupler_chksum('ice_model_slow+', nc)
 
    enddo
+   !$ser cleanup
 
 !-----------------------------------------------------------------------
 
