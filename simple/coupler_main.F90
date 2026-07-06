@@ -160,7 +160,7 @@ implicit none
    termClock = fms_mpp_clock_id( 'Termination' )
    call fms_mpp_clock_begin (initClock)
 
-   !$ser verbatim call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank, ier)
+   !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
    !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
    !$ser mode write
    !$ser on
@@ -182,8 +182,10 @@ implicit none
    do nc = 1, num_cpld_calls
      !$ser verbatim if (nc == save_timestep) then
         !$ser on
+        !$ser verbatim print *, 'INFO: SERIALIZATION IS ON. Starting timestep ', nc
      !$ser verbatim else
         !$ser off
+        !$ser verbatim print *, 'INFO: SERIALIZATION IS OFF. Starting timestep ', nc
      !$ser verbatim endif
      if (do_chksum) call coupler_chksum('top_of_coupled_loop+', nc)
 

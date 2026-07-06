@@ -386,6 +386,8 @@ program coupler_main
    !$ser verbatim integer :: mpi_rank,ier
    !$ser verbatim logical :: ser_on
 
+   !$ser verbatim save_timestep = 1
+
   call fms_mpp_init()
 
   !>these clocks are on the global pelist
@@ -393,7 +395,7 @@ program coupler_main
   call fms_mpp_clock_begin(coupler_clocks%initialization)
 
   call fms_init
-  !$ser verbatim call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank, ier)
+  !$ser verbatim  call mpi_comm_rank(MPI_COMM_WORLD, mpi_rank,ier)
   !$ser init directory='test_data/' prefix='Generator' mpi_rank=mpi_rank unique_id=.true.
   !$ser mode write
   !$ser on
@@ -424,8 +426,10 @@ program coupler_main
   coupled_timestep_loop : do nc = 1, num_cpld_calls
     !$ser verbatim if (nc == save_timestep) then
       !$ser on
+      !$ser verbatim print *, 'INFO: SERIALIZATION IS ON. Starting timestep ', nc
     !$ser verbatim else
       !$ser off
+      !$ser verbatim print *, 'INFO: SERIALIZATION IS OFF. Starting timestep ', nc
     !$ser verbatim endif
 
     if (do_chksum) then
