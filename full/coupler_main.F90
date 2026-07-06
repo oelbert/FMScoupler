@@ -388,6 +388,7 @@ program coupler_main
 
    !$ser verbatim save_timestep = 1
 
+  !$ser verbatim print *, 'INIT START'
   call fms_mpp_init()
 
   !>these clocks are on the global pelist
@@ -415,7 +416,7 @@ program coupler_main
   call fms_mpp_clock_end(coupler_clocks%initialization) !end initialization
   !$ser off
   call fms_mpp_clock_begin(coupler_clocks%main)         !begin main loop
-
+!$ser verbatim print *, 'INIT END'
 !-----------------------------------------------------------------------
 !> ocean/slow-ice integration loop
 
